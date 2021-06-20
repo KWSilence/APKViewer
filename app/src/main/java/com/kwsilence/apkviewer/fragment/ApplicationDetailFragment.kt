@@ -28,6 +28,7 @@ class ApplicationDetailFragment : Fragment() {
       packageManager.getApplicationInfo(args.packageName, PackageManager.GET_META_DATA)
     binding.appHead.imgApp.setImageDrawable(applicationInfo.loadIcon(packageManager))
     binding.appHead.nameApp.text = applicationInfo.loadLabel(packageManager)
+    binding.appHead.packageNameApp.text = args.packageName
 
     return binding.root
   }
