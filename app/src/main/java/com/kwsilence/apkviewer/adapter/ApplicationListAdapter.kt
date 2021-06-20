@@ -19,6 +19,7 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
   companion object {
     private var displayedAppList = ArrayList<Application>()
     private var appList = ArrayList<Application>()
+    private var filterConstraint: String? = null
   }
 
   //dunno how observe change in itemCount
@@ -68,8 +69,11 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
         displayedAppList,
         { it.name.lowercase(Locale.getDefault()).contains(nConstraint) })
     }
+    filterConstraint = nConstraint
     dataSetChanged()
   }
+
+  fun getFilterConstraint(): String? = filterConstraint
 
   //dunno how observe change in itemCount
   private fun dataSetChanged() {

@@ -68,6 +68,14 @@ class MainFragment : Fragment() {
   override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
     inflater.inflate(R.menu.search_app, menu)
     val searchView = menu.findItem(R.id.search_app).actionView as SearchView
+
+    val constraint = adapter.getFilterConstraint()
+    if ( constraint != null && constraint.isNotEmpty()) {
+      searchView.setQuery(constraint, false)
+      searchView.isIconified = false
+      searchView.clearFocus()
+    }
+
     searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
       override fun onQueryTextSubmit(query: String?): Boolean = false
       override fun onQueryTextChange(newText: String?): Boolean {
