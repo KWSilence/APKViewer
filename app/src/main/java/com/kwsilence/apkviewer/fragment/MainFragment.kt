@@ -34,12 +34,12 @@ class MainFragment : Fragment() {
   ): View {
     binding = FragmentMainBinding.inflate(inflater, container, false)
 
-    adapter = ApplicationListAdapter()
-    binding.listApp.adapter = adapter
-    binding.listApp.layoutManager = LinearLayoutManager(requireContext())
-
     val viewModelFactory = MainViewModelFactory(packageManager)
     viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
+
+    adapter = viewModel.listAdapter
+    binding.listApp.adapter = adapter
+    binding.listApp.layoutManager = LinearLayoutManager(requireContext())
 
     initInstalledApp()
     return binding.root
@@ -70,7 +70,7 @@ class MainFragment : Fragment() {
     val searchView = menu.findItem(R.id.search_app).actionView as SearchView
 
     val constraint = adapter.getFilterConstraint()
-    if ( constraint != null && constraint.isNotEmpty()) {
+    if (constraint != null && constraint.isNotEmpty()) {
       searchView.setQuery(constraint, false)
       searchView.isIconified = false
       searchView.clearFocus()

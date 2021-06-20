@@ -1,12 +1,10 @@
 package com.kwsilence.apkviewer.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.ApplicationRowBinding
 import com.kwsilence.apkviewer.fragment.MainFragmentDirections
 import com.kwsilence.apkviewer.model.Application
@@ -15,12 +13,9 @@ import kotlin.collections.ArrayList
 
 class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyViewHolder>() {
 
-  //to "save" list after return from details fragment
-  companion object {
-    private var displayedAppList = ArrayList<Application>()
-    private var appList = ArrayList<Application>()
-    private var filterConstraint: String? = null
-  }
+  private var displayedAppList = ArrayList<Application>()
+  private var appList = ArrayList<Application>()
+  private var filterConstraint: String? = null
 
   //dunno how observe change in itemCount
   var mItemCount = MutableLiveData<Int>()

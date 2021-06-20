@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
 import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.model.Application
 import io.reactivex.rxjava3.core.Single
@@ -16,6 +17,7 @@ class MainViewModel(private val packageManager: PackageManager) : ViewModel() {
 
 
   private var installedAppsUsed = false
+  val listAdapter = ApplicationListAdapter()
 
   //I think it should be single use function
   val oInstalledApplicationFull: Single<List<Application>> = Single.create { sub ->
