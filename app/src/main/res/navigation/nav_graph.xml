@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/nav_graph"
+  app:startDestination="@id/mainFragment">
+
+  <fragment
+    android:id="@+id/mainFragment"
+    android:name="com.kwsilence.apkviewer.fragment.MainFragment"
+    android:label="@string/label_fragment_main"
+    tools:layout="@layout/fragment_main">
+    <action
+      android:id="@+id/from_main_to_details"
+      app:destination="@id/applicationDetailFragment"
+      app:enterAnim="@anim/slide_in_right"
+      app:exitAnim="@anim/slide_out_left"
+      app:popEnterAnim="@anim/slide_in_left"
+      app:popExitAnim="@anim/slide_out_right" />
+  </fragment>
+  <fragment
+    android:id="@+id/applicationDetailFragment"
+    android:name="com.kwsilence.apkviewer.fragment.ApplicationDetailFragment"
+    android:label="@string/label_application_detail_fragment"
+    tools:layout="@layout/fragment_application_detail">
+    <argument
+      android:name="packageName"
+      app:argType="string" />
+  </fragment>
+</navigation>
