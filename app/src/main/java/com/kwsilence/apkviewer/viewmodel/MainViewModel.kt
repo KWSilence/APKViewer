@@ -57,7 +57,9 @@ class MainViewModel(private val packageManager: PackageManager) : ViewModel() {
     }
   }
 
-  val getDiskApplications: Single<ArrayList<String>> = Single.create { sub ->
+  val oDiskApplications: Single<ArrayList<String>> = Single.create { sub ->
+    //this function deprecated, but it only used to read data
+    @Suppress("DEPRECATION")
     val path = Environment.getExternalStorageDirectory()
     val list = ArrayList<String>()
     findAPK(path, list)

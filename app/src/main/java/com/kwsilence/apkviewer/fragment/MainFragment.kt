@@ -75,7 +75,7 @@ class MainFragment : Fragment() {
   }
 
   private fun initDiskApp() {
-    val dispose = viewModel.getDiskApplications
+    val dispose = viewModel.oDiskApplications
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({ list ->
