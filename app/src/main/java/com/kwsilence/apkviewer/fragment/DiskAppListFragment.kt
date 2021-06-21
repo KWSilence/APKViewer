@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,7 +47,7 @@ class DiskAppListFragment : FilterableFragment() {
     binding.listApp.adapter = adapter
     binding.listApp.layoutManager = LinearLayoutManager(requireContext())
 
-    if (haveStoragePermission()){
+    if (haveStoragePermission()) {
       initDiskApp()
     } else {
       requestPermission()
@@ -95,8 +94,8 @@ class DiskAppListFragment : FilterableFragment() {
     }
   }
 
-  private fun loading(isLoading: Boolean){
-    if (isLoading){
+  private fun loading(isLoading: Boolean) {
+    if (isLoading) {
       binding.progressBar.visibility = View.VISIBLE
       binding.listApp.visibility = View.INVISIBLE
     } else {

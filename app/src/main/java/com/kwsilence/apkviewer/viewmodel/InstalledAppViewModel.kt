@@ -2,7 +2,6 @@ package com.kwsilence.apkviewer.viewmodel
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.os.Environment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
@@ -11,32 +10,22 @@ import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.io.File
 
-class DiskAppViewModel(private val packageManager: PackageManager) : ViewModel() {
+class InstalledAppViewModel(private val packageManager: PackageManager) : ViewModel() {
 
-  private var diskAppsUsed = false
+  private var installedAppsUsed = false
   val listAdapter = ApplicationListAdapter()
 
-  val oDiskApplications: Single<ArrayList<Application>> = Single.create { sub ->
+  //I think it should be single use function
+  val oInstalledApplicationFull: Single<List<Application>> = Single.create { sub ->
     val list = ArrayList<Application>()
-    if (diskAppsUsed) {
+    if (installedAppsUsed) {
       sub.onSuccess(list)
       return@create
     }
-    //this function deprecated, but it only used to read data
-    @Suppress("DEPRECATION")
-    val path = Environment.getExternalStorageDirectory()
-    val apkPaths = ArrayList<String>()
-    findAPK(path, apkPaths)
     val jobs = ArrayList<Job>()
-    apkPaths.forEach {
+    packageManager.getInstalledApplications(PackageManager.GET_META_DATA).forEach { info ->
       val job = viewModelScope.launch(Dispatchers.IO) {
-        val info =
-          packageManager.getPackageArchiveInfo(it, PackageManager.GET_META_DATA)!!.applicationInfo
-        info.sourceDir = it
-        info.publicSourceDir = it
-
         var icon: Drawable? = null
         var name = ""
         val iconLoad = this.launch {
@@ -47,7 +36,8 @@ class DiskAppViewModel(private val packageManager: PackageManager) : ViewModel()
         }
         iconLoad.join()
         labelLoad.join()
-        list.add(Application(icon, name, it))
+        val packageName = info.packageName
+        list.add(Application(icon!!, name, packageName))
       }
       jobs.add(job)
     }
@@ -56,19 +46,8 @@ class DiskAppViewModel(private val packageManager: PackageManager) : ViewModel()
         it.join()
       }
       list.sortBy { it.name }
-      diskAppsUsed = true
+      installedAppsUsed = true
       sub.onSuccess(list)
-    }
-  }
-
-  private fun findAPK(dir: File, list: ArrayList<String>) {
-    val files = dir.listFiles()
-    files?.filter { it.path.endsWith(".apk") || it.isDirectory }?.toList()?.forEach { file ->
-      if (file.isDirectory) {
-        findAPK(file, list)
-      } else {
-        list.add(file.absolutePath)
-      }
     }
   }
 }
