@@ -24,11 +24,18 @@ class ApplicationDetailFragment : Fragment() {
     binding = FragmentApplicationDetailBinding.inflate(inflater, container, false)
 
     //TODO ViewModel
+
+    val pn = args.packageName
     val applicationInfo =
-      packageManager.getApplicationInfo(args.packageName, PackageManager.GET_META_DATA)
+      if (pn.endsWith(".apk")) {
+        packageManager.getPackageArchiveInfo(pn, PackageManager.GET_META_DATA)!!.applicationInfo
+      } else {
+        packageManager.getApplicationInfo(pn, PackageManager.GET_META_DATA)
+      }
+
     binding.appHead.imgApp.setImageDrawable(applicationInfo.loadIcon(packageManager))
     binding.appHead.nameApp.text = applicationInfo.loadLabel(packageManager)
-    binding.appHead.packageNameApp.text = args.packageName
+    binding.appHead.packageNameApp.text = pn
 
     return binding.root
   }

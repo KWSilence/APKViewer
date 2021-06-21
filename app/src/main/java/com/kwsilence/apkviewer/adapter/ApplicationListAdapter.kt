@@ -2,7 +2,6 @@ package com.kwsilence.apkviewer.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.kwsilence.apkviewer.databinding.ApplicationRowBinding
@@ -15,10 +14,6 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
 
   private var displayedAppList = ArrayList<Application>()
   private var appList = ArrayList<Application>()
-  private var filterConstraint: String? = null
-
-  //dunno how observe change in itemCount
-  var mItemCount = MutableLiveData<Int>()
 
   class MyViewHolder(val binding: ApplicationRowBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -51,7 +46,7 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
       displayedAppList.clear()
       displayedAppList.addAll(apps)
     }
-    dataSetChanged()
+    notifyDataSetChanged()
   }
 
   fun filter(constraint: String?) {
@@ -64,15 +59,6 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
         displayedAppList,
         { it.name.lowercase(Locale.getDefault()).contains(nConstraint) })
     }
-    filterConstraint = nConstraint
-    dataSetChanged()
-  }
-
-  fun getFilterConstraint(): String? = filterConstraint
-
-  //dunno how observe change in itemCount
-  private fun dataSetChanged() {
-    mItemCount.value = itemCount
     notifyDataSetChanged()
   }
 
