@@ -1,32 +1,21 @@
 package com.kwsilence.apkviewer.fragment
 
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.viewModels
+import com.google.android.material.tabs.TabLayoutMediator
 import com.kwsilence.apkviewer.R
-import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
-import com.kwsilence.apkviewer.constant.Constant
+import com.kwsilence.apkviewer.adapter.AppViewPagerAdapter
 import com.kwsilence.apkviewer.databinding.FragmentMainBinding
 import com.kwsilence.apkviewer.viewmodel.MainViewModel
-import com.kwsilence.apkviewer.viewmodel.MainViewModelFactory
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MainFragment : Fragment() {
 
   private lateinit var binding: FragmentMainBinding
-  private lateinit var adapter: ApplicationListAdapter
-  private lateinit var viewModel: MainViewModel
-  private val disposeBag = CompositeDisposable()
-  private val packageManager: PackageManager by lazy {
-    requireContext().packageManager
-  }
+  private val viewModel by viewModels<MainViewModel>()
+  private lateinit var adapter: AppViewPagerAdapter
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -34,35 +23,28 @@ class MainFragment : Fragment() {
   ): View {
     binding = FragmentMainBinding.inflate(inflater, container, false)
 
-    val viewModelFactory = MainViewModelFactory(packageManager)
-    viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
+    initAppViewPagerAdapter()
 
-    adapter = viewModel.listAdapter
-    binding.containerInstalledApps.listApp.adapter = adapter
-    binding.containerInstalledApps.listApp.layoutManager = LinearLayoutManager(requireContext())
+    binding.viewPagerApp.adapter = adapter
+    TabLayoutMediator(binding.tabLayoutApp, binding.viewPagerApp, adapter).attach()
 
-    initInstalledApp()
+    setHasOptionsMenu(true)
     return binding.root
   }
 
-  private fun initInstalledApp() {
-    loading(true)
+  private fun initAppViewPagerAdapter() {
+    adapter = AppViewPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
 
-    //observe itemCount change while filtering
-    adapter.mItemCount.observe(viewLifecycleOwner, {
-      binding.containerInstalledApps.txtInstalled.text = "${getString(R.string.text_installed)} (${it})"
-    })
+    //dunno how save instance of adapter
+    if (!viewModel.filled) {
+      viewModel.fragments.add(InstalledAppListFragment())
+      viewModel.titles.add("Installed")
+      viewModel.fragments.add(DiskAppListFragment())
+      viewModel.titles.add("Disk")
+    }
 
-    val dispose = viewModel.oInstalledApplicationFull
-      .subscribeOn(Schedulers.io())
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe({ apps ->
-        adapter.setData(apps)
-        loading(false)
-      }, {
-        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
-      })
-    disposeBag.add(dispose)
+    adapter.addFragment(viewModel.fragments[0], viewModel.titles[0])
+    adapter.addFragment(viewModel.fragments[1], viewModel.titles[1])
   }
 
   override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -85,16 +67,4 @@ class MainFragment : Fragment() {
     })
     super.onCreateOptionsMenu(menu, inflater)
   }
-
-  private fun loading(isLoading: Boolean) {
-    if (isLoading) {
-      binding.containerInstalledApps.root.visibility = View.INVISIBLE
-      binding.progressApps.visibility = View.VISIBLE
-    } else {
-      binding.containerInstalledApps.root.visibility = View.VISIBLE
-      binding.progressApps.visibility = View.GONE
-    }
-    setHasOptionsMenu(!isLoading)
-  }
-
 }
