@@ -38,8 +38,8 @@ class MainFragment : Fragment() {
     viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
     adapter = viewModel.listAdapter
-    binding.listApp.adapter = adapter
-    binding.listApp.layoutManager = LinearLayoutManager(requireContext())
+    binding.containerInstalledApps.listApp.adapter = adapter
+    binding.containerInstalledApps.listApp.layoutManager = LinearLayoutManager(requireContext())
 
     initInstalledApp()
     return binding.root
@@ -50,7 +50,7 @@ class MainFragment : Fragment() {
 
     //observe itemCount change while filtering
     adapter.mItemCount.observe(viewLifecycleOwner, {
-      binding.txtInstalled.text = "${getString(R.string.text_installed)} (${it})"
+      binding.containerInstalledApps.txtInstalled.text = "${getString(R.string.text_installed)} (${it})"
     })
 
     val dispose = viewModel.oInstalledApplicationFull
@@ -88,10 +88,10 @@ class MainFragment : Fragment() {
 
   private fun loading(isLoading: Boolean) {
     if (isLoading) {
-      binding.containerInstalledApps.visibility = View.INVISIBLE
+      binding.containerInstalledApps.root.visibility = View.INVISIBLE
       binding.progressApps.visibility = View.VISIBLE
     } else {
-      binding.containerInstalledApps.visibility = View.VISIBLE
+      binding.containerInstalledApps.root.visibility = View.VISIBLE
       binding.progressApps.visibility = View.GONE
     }
     setHasOptionsMenu(!isLoading)
