@@ -2,11 +2,9 @@ package com.kwsilence.apkviewer.viewmodel
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
-import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.model.Application
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +12,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val packageManager: PackageManager) : ViewModel() {
-
 
   private var installedAppsUsed = false
   val listAdapter = ApplicationListAdapter()
@@ -28,7 +25,6 @@ class MainViewModel(private val packageManager: PackageManager) : ViewModel() {
     }
     val jobs = ArrayList<Job>()
     packageManager.getInstalledApplications(PackageManager.GET_META_DATA).forEach { info ->
-      Log.d(Constant.DEBUG_TAG, "SINGLE1")
       val job = viewModelScope.launch(Dispatchers.IO) {
         var icon: Drawable? = null
         var name = ""
