@@ -3,7 +3,6 @@ package com.kwsilence.apkviewer.fragment
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.*
 import android.widget.SearchView
@@ -20,7 +19,6 @@ import com.kwsilence.apkviewer.viewmodel.MainViewModelFactory
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.io.File
 
 class MainFragment : Fragment() {
 
@@ -45,12 +43,13 @@ class MainFragment : Fragment() {
     binding.containerInstalledApps.listApp.adapter = adapter
     binding.containerInstalledApps.listApp.layoutManager = LinearLayoutManager(requireContext())
 
-//    initInstalledApp()
-    requestPermission()
-//    if (!haveStoragePermission())
-//      return binding.root
+    initInstalledApp()
 
-    initDiskApp()
+    //it will be in another block
+    requestPermission()
+    if (haveStoragePermission())
+      initDiskApp()
+
     return binding.root
   }
 
@@ -59,11 +58,12 @@ class MainFragment : Fragment() {
 
     //observe itemCount change while filtering
     adapter.mItemCount.observe(viewLifecycleOwner, {
-      binding.containerInstalledApps.txtInstalled.text = "${getString(R.string.text_installed)} (${it})"
+      binding.containerInstalledApps.txtInstalled.text =
+        "${getString(R.string.text_installed)} (${it})"
     })
 
     val dispose = viewModel.oInstalledApplicationFull
-      .subscribeOn(Schedulers.io())
+      .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({ apps ->
         adapter.setData(apps)
@@ -74,33 +74,16 @@ class MainFragment : Fragment() {
     disposeBag.add(dispose)
   }
 
-  //can't write/read files not in self data directory
   private fun initDiskApp() {
-
-    val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-//    val path = requireContext().getExternalFilesDir(null)
-//    val file = File(path!!.absolutePath+File.separator+"data.txt")
-//    Log.d(Constant.DEBUG_TAG, file.absolutePath)
-//    val isCreated = file.createNewFile()
-//    if (isCreated){
-//      Log.d(Constant.DEBUG_TAG, "file created")
-//    }
-    Log.d(Constant.DEBUG_TAG, path!!.absolutePath)
-    find(path)
-    Log.d(Constant.DEBUG_TAG, "END")
-  }
-
-  private fun find(file: File) {
-    val files = file.listFiles()
-    Log.d(Constant.DEBUG_TAG, "FIND ${file.absolutePath}")
-    files?.forEach { f ->
-      if (f.isDirectory) {
-        Log.d(Constant.DEBUG_TAG, "DIR ${f.absolutePath}")
-        find(f)
-      } else {
-        Log.d(Constant.DEBUG_TAG, "FILE ${f.absolutePath}")
-      }
-    }
+    val dispose = viewModel.getDiskApplications
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe({ list ->
+        list.forEach { Log.d(Constant.DEBUG_TAG, "FILE $it") }
+      }, {
+        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
+      })
+    disposeBag.add(dispose)
   }
 
   override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -137,14 +120,14 @@ class MainFragment : Fragment() {
 
 
   private fun haveStoragePermission() =
-    ActivityCompat.checkSelfPermission(requireActivity(), Manifest
-      .permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED
+    ActivityCompat.checkSelfPermission(
+      requireActivity(),
+      Manifest.permission.READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
 
   private fun requestPermission() {
     if (!haveStoragePermission()) {
-      val permissions = arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE
-      )
+      val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
       ActivityCompat.requestPermissions(requireActivity(), permissions, 1)
     }
   }

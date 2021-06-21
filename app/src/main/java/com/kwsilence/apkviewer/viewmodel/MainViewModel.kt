@@ -2,6 +2,7 @@ package com.kwsilence.apkviewer.viewmodel
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainViewModel(private val packageManager: PackageManager) : ViewModel() {
 
@@ -54,4 +56,23 @@ class MainViewModel(private val packageManager: PackageManager) : ViewModel() {
       sub.onSuccess(list)
     }
   }
+
+  val getDiskApplications: Single<ArrayList<String>> = Single.create { sub ->
+    val path = Environment.getExternalStorageDirectory()
+    val list = ArrayList<String>()
+    findAPK(path, list)
+    sub.onSuccess(list)
+  }
+
+  private fun findAPK(dir: File, list: ArrayList<String>) {
+    val files = dir.listFiles()
+    files?.filter { it.path.endsWith(".apk") || it.isDirectory }?.toList()?.forEach { file ->
+      if (file.isDirectory) {
+        findAPK(file, list)
+      } else {
+        list.add(file.absolutePath)
+      }
+    }
+  }
+
 }
