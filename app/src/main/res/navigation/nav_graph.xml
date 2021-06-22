@@ -24,7 +24,7 @@
     android:label="@string/label_application_detail_fragment"
     tools:layout="@layout/fragment_application_detail">
     <argument
-      android:name="packageName"
+      android:name="source"
       app:argType="string" />
   </fragment>
 </navigation>

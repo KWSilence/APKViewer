@@ -26,7 +26,7 @@ class DiskAppListFragment(title: String?) : FilterableTitledFragment(title) {
   private lateinit var viewModel: DiskAppViewModel
   private var adapter: ApplicationListAdapter? = null
   private val disposeBag = CompositeDisposable()
-  private val packageManager: PackageManager by lazy {
+  private val pm: PackageManager by lazy {
     requireContext().packageManager
   }
 
@@ -40,7 +40,7 @@ class DiskAppListFragment(title: String?) : FilterableTitledFragment(title) {
   ): View {
     binding = FragmentDiskAppListBinding.inflate(inflater, container, false)
 
-    val viewModelFactory = MainViewModelFactory(packageManager)
+    val viewModelFactory = MainViewModelFactory(pm)
     viewModel = ViewModelProvider(this, viewModelFactory).get(DiskAppViewModel::class.java)
 
     adapter = viewModel.listAdapter

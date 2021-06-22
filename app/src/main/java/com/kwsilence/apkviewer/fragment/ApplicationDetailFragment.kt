@@ -13,7 +13,7 @@ class ApplicationDetailFragment : Fragment() {
 
   private val args by navArgs<ApplicationDetailFragmentArgs>()
   private lateinit var binding: FragmentApplicationDetailBinding
-  private val packageManager: PackageManager by lazy {
+  private val pm: PackageManager by lazy {
     requireContext().packageManager
   }
 
@@ -25,17 +25,17 @@ class ApplicationDetailFragment : Fragment() {
 
     //TODO ViewModel
 
-    val pn = args.packageName
+    val src = args.source
     val applicationInfo =
-      if (pn.endsWith(".apk")) {
-        packageManager.getPackageArchiveInfo(pn, PackageManager.GET_META_DATA)!!.applicationInfo
+      if (src.endsWith(".apk")) {
+        pm.getPackageArchiveInfo(src, PackageManager.GET_META_DATA)!!.applicationInfo
       } else {
-        packageManager.getApplicationInfo(pn, PackageManager.GET_META_DATA)
+        pm.getApplicationInfo(src, PackageManager.GET_META_DATA)
       }
 
-    binding.appHead.imgApp.setImageDrawable(applicationInfo.loadIcon(packageManager))
-    binding.appHead.nameApp.text = applicationInfo.loadLabel(packageManager)
-    binding.appHead.packageNameApp.text = pn
+    binding.appHead.imgApp.setImageDrawable(applicationInfo.loadIcon(pm))
+    binding.appHead.nameApp.text = applicationInfo.loadLabel(pm)
+    binding.appHead.packageNameApp.text = src
 
     return binding.root
   }

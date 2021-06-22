@@ -13,7 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.File
 
-class DiskAppViewModel(private val packageManager: PackageManager) : ViewModel() {
+class DiskAppViewModel(private val pm: PackageManager) : ViewModel() {
 
   private var diskAppsUsed = false
   val listAdapter = ApplicationListAdapter()
@@ -33,17 +33,17 @@ class DiskAppViewModel(private val packageManager: PackageManager) : ViewModel()
     apkPaths.forEach {
       val job = viewModelScope.launch(Dispatchers.IO) {
         val info =
-          packageManager.getPackageArchiveInfo(it, PackageManager.GET_META_DATA)!!.applicationInfo
+          pm.getPackageArchiveInfo(it, PackageManager.GET_META_DATA)!!.applicationInfo
         info.sourceDir = it
         info.publicSourceDir = it
 
         var icon: Drawable? = null
         var name = ""
         val iconLoad = this.launch {
-          icon = info.loadIcon(packageManager)
+          icon = info.loadIcon(pm)
         }
         val labelLoad = this.launch {
-          name = info.loadLabel(packageManager).toString()
+          name = info.loadLabel(pm).toString()
         }
         iconLoad.join()
         labelLoad.join()

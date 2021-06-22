@@ -24,7 +24,7 @@ class InstalledAppListFragment(title: String?) : FilterableTitledFragment(title)
   private lateinit var viewModel: InstalledAppViewModel
   private var adapter: ApplicationListAdapter? = null
   private val disposeBag = CompositeDisposable()
-  private val packageManager: PackageManager by lazy {
+  private val pm: PackageManager by lazy {
     requireContext().packageManager
   }
 
@@ -38,7 +38,7 @@ class InstalledAppListFragment(title: String?) : FilterableTitledFragment(title)
   ): View {
     binding = FragmentInstalledAppListBinding.inflate(inflater, container, false)
 
-    val viewModelFactory = MainViewModelFactory(packageManager)
+    val viewModelFactory = MainViewModelFactory(pm)
     viewModel = ViewModelProvider(this, viewModelFactory).get(InstalledAppViewModel::class.java)
 
     adapter = viewModel.listAdapter

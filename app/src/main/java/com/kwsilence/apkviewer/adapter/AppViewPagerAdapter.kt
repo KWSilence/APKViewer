@@ -13,7 +13,7 @@ class AppViewPagerAdapter(
   l: Lifecycle
 ) : FragmentStateAdapter(fm, l), TabLayoutMediator.TabConfigurationStrategy {
 
-  //temporary solution
+  //(not)temporary solution
   companion object {
     private var filterConstraint: String? = null
   }

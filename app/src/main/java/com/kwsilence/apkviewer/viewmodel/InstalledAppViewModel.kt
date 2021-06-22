@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class InstalledAppViewModel(private val packageManager: PackageManager) : ViewModel() {
+class InstalledAppViewModel(private val pm: PackageManager) : ViewModel() {
 
   private var installedAppsUsed = false
   val listAdapter = ApplicationListAdapter()
@@ -24,15 +24,15 @@ class InstalledAppViewModel(private val packageManager: PackageManager) : ViewMo
       return@create
     }
     val jobs = ArrayList<Job>()
-    packageManager.getInstalledApplications(PackageManager.GET_META_DATA).forEach { info ->
+    pm.getInstalledApplications(PackageManager.GET_META_DATA).forEach { info ->
       val job = viewModelScope.launch(Dispatchers.IO) {
         var icon: Drawable? = null
         var name = ""
         val iconLoad = this.launch {
-          icon = info.loadIcon(packageManager)
+          icon = info.loadIcon(pm)
         }
         val labelLoad = this.launch {
-          name = info.loadLabel(packageManager).toString()
+          name = info.loadLabel(pm).toString()
         }
         iconLoad.join()
         labelLoad.join()
