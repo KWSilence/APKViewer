@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.tabs.TabLayoutMediator
+import com.kwsilence.apkviewer.adapter.TabViewPagerAdapter
 import com.kwsilence.apkviewer.databinding.FragmentApplicationDetailBinding
 
 class ApplicationDetailFragment : Fragment() {
 
   private val args by navArgs<ApplicationDetailFragmentArgs>()
   private lateinit var binding: FragmentApplicationDetailBinding
+  private val fragments = ArrayList<ApplicationInfoFragment>()
+  private lateinit var adapter: TabViewPagerAdapter<ApplicationInfoFragment>
   private val pm: PackageManager by lazy {
     requireContext().packageManager
   }
@@ -24,6 +28,10 @@ class ApplicationDetailFragment : Fragment() {
     binding = FragmentApplicationDetailBinding.inflate(inflater, container, false)
 
     //TODO ViewModel
+
+    initAdapter()
+    binding.appPager.adapter = adapter
+    TabLayoutMediator(binding.appTabs, binding.appPager, adapter).attach()
 
     val src = args.source
     val applicationInfo =
@@ -39,4 +47,19 @@ class ApplicationDetailFragment : Fragment() {
 
     return binding.root
   }
+
+  private fun initAdapter() {
+    fragments.apply {
+      add(ApplicationInfoFragment("Info"))
+      add(ApplicationInfoFragment("Manifest"))
+      add(ApplicationInfoFragment("Recourse"))
+    }
+
+    adapter = TabViewPagerAdapter(
+      requireActivity().supportFragmentManager,
+      lifecycle,
+      fragments
+    )
+  }
+
 }

@@ -34,8 +34,6 @@ class MainFragment : Fragment() {
   }
 
   private fun initAppViewPagerAdapter() {
-    adapter = AppViewPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
-
     //dunno how save instance of adapter
     if (!viewModel.isFilled()) {
       val list = ArrayList<FilterableTitledFragment>()
@@ -44,7 +42,11 @@ class MainFragment : Fragment() {
       viewModel.fillFragments(list)
     }
 
-    adapter.addFragments(viewModel.fragments)
+    adapter = AppViewPagerAdapter(
+      requireActivity().supportFragmentManager,
+      lifecycle,
+      viewModel.fragments
+    )
   }
 
   override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
