@@ -1,10 +1,16 @@
 package com.kwsilence.apkviewer.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.kwsilence.apkviewer.util.FilterableFragment
+import com.kwsilence.apkviewer.util.FilterableTitledFragment
 
 class MainViewModel : ViewModel() {
-  val fragments = ArrayList<FilterableFragment>()
-  val titles = ArrayList<String>()
-  var filled = false
+  val fragments = ArrayList<FilterableTitledFragment>()
+  private var filled = false
+
+  fun fillFragments(fragments: List<FilterableTitledFragment>) {
+    this.fragments.addAll(fragments)
+    filled = true
+  }
+
+  fun isFilled() = filled
 }

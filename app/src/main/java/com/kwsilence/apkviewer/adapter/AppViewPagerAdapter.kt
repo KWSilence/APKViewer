@@ -6,7 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.kwsilence.apkviewer.util.FilterableFragment
+import com.kwsilence.apkviewer.util.FilterableTitledFragment
 
 class AppViewPagerAdapter(
   fm: FragmentManager,
@@ -18,20 +18,16 @@ class AppViewPagerAdapter(
     private var filterConstraint: String? = null
   }
 
-  private val fragments = ArrayList<FilterableFragment>()
-  private val titles = ArrayList<String>()
+  private val fragments = ArrayList<FilterableTitledFragment>()
 
   override fun getItemCount(): Int = fragments.size
 
   override fun createFragment(position: Int): Fragment = fragments[position]
 
-  fun addFragment(fragment: FilterableFragment, title: String) {
-    fragments.add(fragment)
-    titles.add(title)
-  }
+  fun addFragments(fragments: List<FilterableTitledFragment>) = this.fragments.addAll(fragments)
 
   override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
-    tab.text = titles[position]
+    tab.text = fragments[position].getTitle()
   }
 
   fun filter(constraint: String?) {

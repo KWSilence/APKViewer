@@ -9,6 +9,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.kwsilence.apkviewer.R
 import com.kwsilence.apkviewer.adapter.AppViewPagerAdapter
 import com.kwsilence.apkviewer.databinding.FragmentMainBinding
+import com.kwsilence.apkviewer.util.FilterableTitledFragment
 import com.kwsilence.apkviewer.viewmodel.MainViewModel
 
 class MainFragment : Fragment() {
@@ -36,15 +37,14 @@ class MainFragment : Fragment() {
     adapter = AppViewPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
 
     //dunno how save instance of adapter
-    if (!viewModel.filled) {
-      viewModel.fragments.add(InstalledAppListFragment())
-      viewModel.titles.add("Installed")
-      viewModel.fragments.add(DiskAppListFragment())
-      viewModel.titles.add("Disk")
+    if (!viewModel.isFilled()) {
+      val list = ArrayList<FilterableTitledFragment>()
+      list.add(InstalledAppListFragment("Installed"))
+      list.add(DiskAppListFragment("Disk"))
+      viewModel.fillFragments(list)
     }
 
-    adapter.addFragment(viewModel.fragments[0], viewModel.titles[0])
-    adapter.addFragment(viewModel.fragments[1], viewModel.titles[1])
+    adapter.addFragments(viewModel.fragments)
   }
 
   override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

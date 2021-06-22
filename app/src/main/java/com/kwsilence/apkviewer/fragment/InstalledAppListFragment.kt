@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
 import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.FragmentInstalledAppListBinding
-import com.kwsilence.apkviewer.util.FilterableFragment
+import com.kwsilence.apkviewer.util.FilterableTitledFragment
 import com.kwsilence.apkviewer.viewmodel.InstalledAppViewModel
 import com.kwsilence.apkviewer.viewmodel.MainViewModelFactory
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class InstalledAppListFragment : FilterableFragment() {
+class InstalledAppListFragment(title: String?) : FilterableTitledFragment(title) {
 
   private lateinit var binding: FragmentInstalledAppListBinding
   private lateinit var viewModel: InstalledAppViewModel
