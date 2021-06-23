@@ -6,8 +6,7 @@
   android:layout_height="match_parent"
   tools:context=".fragment.InstalledAppListFragment">
 
-  <!--  soon will be changed to NestedScrollView-->
-  <ScrollView
+  <androidx.core.widget.NestedScrollView
     android:id="@+id/container_list_app"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -54,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     </LinearLayout>
-  </ScrollView>
+  </androidx.core.widget.NestedScrollView>
 
   <ProgressBar
     android:id="@+id/progressBar"
