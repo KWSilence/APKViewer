@@ -55,12 +55,10 @@ class InstalledAppListFragment(title: String?) : FilterableTitledFragment(title)
     userInstalledAdapter = viewModel.userInstalledListAdapter
     binding.listUserApp.adapter = userInstalledAdapter
     binding.listUserApp.layoutManager = LinearLayoutManager(requireContext())
-    binding.listUserApp.isNestedScrollingEnabled = false
 
     systemInstalledAdapter = viewModel.systemInstalledListAdapter
     binding.listSystemApp.adapter = systemInstalledAdapter
     binding.listSystemApp.layoutManager = LinearLayoutManager(requireContext())
-    binding.listSystemApp.isNestedScrollingEnabled = false
 
     binding.txtUserApp.setOnClickListener {
       collapseList(
