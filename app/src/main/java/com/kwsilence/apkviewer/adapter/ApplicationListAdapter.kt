@@ -57,7 +57,11 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
     } else {
       appList.filterTo(
         displayedAppList,
-        { it.name.lowercase(Locale.getDefault()).contains(nConstraint) })
+        {
+          it.name.lowercase(Locale.getDefault()).contains(nConstraint) ||
+              if (it.source.endsWith(".apk")) false else
+                it.source.lowercase(Locale.getDefault()).contains(nConstraint)
+        })
     }
     notifyDataSetChanged()
   }
