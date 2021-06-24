@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
+import com.kwsilence.apkviewer.adapter.segmented.SegmentedAppListAdapter
 import com.kwsilence.apkviewer.model.Application
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
@@ -16,16 +16,11 @@ class InstalledAppViewModel(private val pm: PackageManager) : ViewModel() {
 
   private var installedUserAppsUsed = false
   private var installedSystemAppsUsed = false
-  private val adapterList = ArrayList<ApplicationListAdapter>().apply {
-    add(ApplicationListAdapter())
-    add(ApplicationListAdapter())
-  }
-  val userInstalledListAdapter = adapterList[0]
-  val systemInstalledListAdapter = adapterList[1]
-  val listAdapterCount = adapterList.size
+  val adapter = SegmentedAppListAdapter()
+  val listSize = 2 //Oh yes, magic number
 
   //I think it should be single use function
-  val oInstalledUserApplication: Single<List<Application>> = Single.create { sub ->
+  val oInstalledUserApplication: Single<ArrayList<Application>> = Single.create { sub ->
     if (installedUserAppsUsed) {
       sub.onSuccess(ArrayList())
       return@create
@@ -35,7 +30,7 @@ class InstalledAppViewModel(private val pm: PackageManager) : ViewModel() {
     }
   }
 
-  val oInstalledSystemApplication: Single<List<Application>> = Single.create { sub ->
+  val oInstalledSystemApplication: Single<ArrayList<Application>> = Single.create { sub ->
     if (installedSystemAppsUsed) {
       sub.onSuccess(ArrayList())
       return@create
@@ -45,7 +40,7 @@ class InstalledAppViewModel(private val pm: PackageManager) : ViewModel() {
     }
   }
 
-  private suspend fun getAppList(isSystem: Boolean): List<Application> {
+  private suspend fun getAppList(isSystem: Boolean): ArrayList<Application> {
     val list = ArrayList<Application>()
     val jobs = ArrayList<Job>()
     pm.getInstalledApplications(PackageManager.GET_META_DATA).forEach { info ->

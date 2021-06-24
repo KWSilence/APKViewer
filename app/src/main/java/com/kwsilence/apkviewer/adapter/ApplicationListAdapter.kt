@@ -45,8 +45,8 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
       appList.addAll(apps)
       displayedAppList.clear()
       displayedAppList.addAll(apps)
+      notifyDataSetChanged()
     }
-    notifyDataSetChanged()
   }
 
   fun filter(constraint: String?) {
