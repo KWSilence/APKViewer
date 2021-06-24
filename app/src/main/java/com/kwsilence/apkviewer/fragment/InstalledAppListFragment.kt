@@ -51,7 +51,7 @@ class InstalledAppListFragment(title: String?) : FilterableTitledFragment(title)
     binding.listApp.adapter = installedAppAdapter
     binding.listApp.layoutManager = LinearLayoutManager(requireContext())
 
-    installedAppAdapter!!.readySetList.observe(viewLifecycleOwner, { loading(false) })
+    installedAppAdapter!!.readySetList.observe(viewLifecycleOwner, { if (it) loading(false) })
 
     loading(true)
     initUserInstalledApp()
