@@ -2,14 +2,22 @@ package com.kwsilence.apkviewer.fragment
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import com.kwsilence.apkviewer.adapter.TabViewPagerAdapter
+import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.FragmentApplicationDetailBinding
+import com.kwsilence.apkviewer.viewmodel.ApplicationDetailViewModel
+import com.kwsilence.apkviewer.viewmodel.MainViewModelFactory
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class ApplicationDetailFragment : Fragment() {
 
@@ -17,6 +25,8 @@ class ApplicationDetailFragment : Fragment() {
   private lateinit var binding: FragmentApplicationDetailBinding
   private val fragments = ArrayList<ApplicationInfoFragment>()
   private lateinit var adapter: TabViewPagerAdapter<ApplicationInfoFragment>
+  private lateinit var viewModel: ApplicationDetailViewModel
+  private val disposeBag = CompositeDisposable()
   private val pm: PackageManager by lazy {
     requireContext().packageManager
   }
@@ -27,23 +37,14 @@ class ApplicationDetailFragment : Fragment() {
   ): View {
     binding = FragmentApplicationDetailBinding.inflate(inflater, container, false)
 
-    //TODO ViewModel
+    val vmf = MainViewModelFactory(pm)
+    viewModel = ViewModelProvider(this, vmf).get(ApplicationDetailViewModel::class.java)
 
     initAdapter()
     binding.appPager.adapter = adapter
     TabLayoutMediator(binding.appTabs, binding.appPager, adapter).attach()
 
-    val src = args.source
-    val applicationInfo =
-      if (src.endsWith(".apk")) {
-        pm.getPackageArchiveInfo(src, PackageManager.GET_META_DATA)!!.applicationInfo
-      } else {
-        pm.getApplicationInfo(src, PackageManager.GET_META_DATA)
-      }
-
-    binding.appHead.imgApp.setImageDrawable(applicationInfo.loadIcon(pm))
-    binding.appHead.nameApp.text = applicationInfo.loadLabel(pm)
-    binding.appHead.packageNameApp.text = src
+    initAppHead()
 
     return binding.root
   }
@@ -52,7 +53,7 @@ class ApplicationDetailFragment : Fragment() {
     fragments.apply {
       add(ApplicationInfoFragment("Info"))
       add(ApplicationInfoFragment("Manifest"))
-      add(ApplicationInfoFragment("Recourse"))
+      add(ApplicationInfoFragment("Resource"))
     }
 
     adapter = TabViewPagerAdapter(
@@ -62,4 +63,22 @@ class ApplicationDetailFragment : Fragment() {
     )
   }
 
+  fun initAppHead() {
+    val dispose = viewModel.oAppHead(args.source)
+      .subscribeOn(Schedulers.newThread())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe({
+        binding.appHead.imgApp.setImageDrawable(it.icon)
+        binding.appHead.nameApp.text = it.name
+        binding.appHead.sourceApp.text = it.source
+      }, {
+        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
+      })
+    disposeBag.add(dispose)
+  }
+
+  override fun onDestroy() {
+    disposeBag.clear()
+    super.onDestroy()
+  }
 }

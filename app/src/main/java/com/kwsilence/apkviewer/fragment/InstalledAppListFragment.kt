@@ -26,7 +26,7 @@ class InstalledAppListFragment(title: String?) : FilterableTitledFragment(title)
   private lateinit var viewModel: InstalledAppViewModel
   private var installedAppAdapter: SegmentedAppListAdapter? = null
   private val disposeBag = CompositeDisposable()
-  private var listCount = 0 //magic number again :)
+  private var listCount = 0
   private val pm: PackageManager by lazy {
     requireContext().packageManager
   }

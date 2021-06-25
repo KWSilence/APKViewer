@@ -27,7 +27,7 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
     val currentApp = displayedAppList[position]
     holder.binding.imgApp.setImageDrawable(currentApp.icon)
     holder.binding.nameApp.text = currentApp.name
-    holder.binding.packageNameApp.text = currentApp.source
+    holder.binding.sourceApp.text = currentApp.source
     //navigate to details
     holder.binding.appRowLayout.setOnClickListener {
       val action = MainFragmentDirections.fromMainToDetails(currentApp.source)

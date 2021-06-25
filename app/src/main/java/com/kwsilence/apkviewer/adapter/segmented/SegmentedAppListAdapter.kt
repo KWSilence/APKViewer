@@ -48,7 +48,7 @@ class SegmentedAppListAdapter : RecyclerView.Adapter<SegmentedAppListAdapter.MyV
       val currentApp = item.displayedList[0]
       holder.itemView.findViewById<ImageView>(R.id.img_app).setImageDrawable(currentApp.icon)
       holder.itemView.findViewById<TextView>(R.id.name_app).text = currentApp.name
-      holder.itemView.findViewById<TextView>(R.id.package_name_app).text = currentApp.source
+      holder.itemView.findViewById<TextView>(R.id.source_app).text = currentApp.source
       holder.itemView.findViewById<ConstraintLayout>(R.id.app_row_layout).setOnClickListener {
         val action = MainFragmentDirections.fromMainToDetails(currentApp.source)
         holder.itemView.findNavController().navigate(action)
