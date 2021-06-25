@@ -47,7 +47,7 @@ class ApplicationDetailFragment : Fragment() {
 
     initAppHead()
     initAppDetail(fragments[0])
-//    initAppManifest(fragments[1])
+    initAppManifest(fragments[1])
 //    initAppResource(fragments[2])
     return binding.root
   }
@@ -97,7 +97,6 @@ class ApplicationDetailFragment : Fragment() {
           getInfoMap(getString(R.string.app_detail_certificate), detail.certificate)
         )
         fragment.setData(res)
-        Log.d(Constant.DEBUG_TAG, "INIT END")
 //        fragment.setLoading(false)
       }, {
         Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")

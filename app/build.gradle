@@ -54,6 +54,9 @@ dependencies {
 
   implementation "io.reactivex.rxjava3:rxjava:$rxjava_version"
   implementation "io.reactivex.rxjava3:rxandroid:$rxandroid_version"
+
+  implementation 'net.dongliu:apk-parser:2.6.10'
+
   implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
   testImplementation 'junit:junit:4.+'

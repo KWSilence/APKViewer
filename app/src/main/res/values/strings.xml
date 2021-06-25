@@ -19,7 +19,7 @@
 
   <string name="app_detail_package_name">Package name</string>
   <string name="app_detail_version">Version</string>
-  <string name="app_detail_size">Size</string>
+  <string name="app_detail_size">APK size</string>
   <string name="app_detail_apk_file">APK file</string>
   <string name="app_detail_data_path">Data path</string>
   <string name="app_detail_install_date">Install date</string>
