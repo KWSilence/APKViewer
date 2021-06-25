@@ -37,8 +37,8 @@ class MainFragment : Fragment() {
     //dunno how save instance of adapter
     if (!viewModel.isFilled()) {
       val list = ArrayList<FilterableTitledFragment>()
-      list.add(InstalledAppListFragment("Installed"))
-      list.add(DiskAppListFragment("Disk"))
+      list.add(InstalledAppListFragment(getString(R.string.text_installed_list)))
+      list.add(DiskAppListFragment(getString(R.string.text_disk_list)))
       viewModel.fillFragments(list)
     }
 

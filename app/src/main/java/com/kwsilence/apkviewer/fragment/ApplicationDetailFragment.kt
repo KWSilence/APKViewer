@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
+import com.kwsilence.apkviewer.R
 import com.kwsilence.apkviewer.adapter.TabViewPagerAdapter
 import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.FragmentApplicationDetailBinding
@@ -45,15 +46,17 @@ class ApplicationDetailFragment : Fragment() {
     TabLayoutMediator(binding.appTabs, binding.appPager, adapter).attach()
 
     initAppHead()
-
+    initAppDetail(fragments[0])
+//    initAppManifest(fragments[1])
+//    initAppResource(fragments[2])
     return binding.root
   }
 
   private fun initAdapter() {
     fragments.apply {
-      add(ApplicationInfoFragment("Info"))
-      add(ApplicationInfoFragment("Manifest"))
-      add(ApplicationInfoFragment("Resource"))
+      add(ApplicationInfoFragment(getString(R.string.app_detail_tab_info)))
+      add(ApplicationInfoFragment(getString(R.string.app_detail_tab_manifest)))
+      add(ApplicationInfoFragment(getString(R.string.app_detail_tab_resource)))
     }
 
     adapter = TabViewPagerAdapter(
@@ -63,7 +66,7 @@ class ApplicationDetailFragment : Fragment() {
     )
   }
 
-  fun initAppHead() {
+  private fun initAppHead() {
     val dispose = viewModel.oAppHead(args.source)
       .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
@@ -76,6 +79,66 @@ class ApplicationDetailFragment : Fragment() {
       })
     disposeBag.add(dispose)
   }
+
+  private fun initAppDetail(fragment: ApplicationInfoFragment) {
+//    fragment.setLoading(true)
+    val dispose = viewModel.oAppDetail(args.source)
+      .subscribeOn(Schedulers.newThread())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe({ detail ->
+        val res = listOf(
+          getInfoMap(getString(R.string.app_detail_package_name), detail.packageName),
+          getInfoMap(getString(R.string.app_detail_version), detail.version),
+          getInfoMap(getString(R.string.app_detail_size), detail.size),
+          getInfoMap(getString(R.string.app_detail_apk_file), detail.apkFile),
+          getInfoMap(getString(R.string.app_detail_data_path), detail.dataPath),
+          getInfoMap(getString(R.string.app_detail_install_date), detail.installDate),
+          getInfoMap(getString(R.string.app_detail_update_date), detail.updateDate),
+          getInfoMap(getString(R.string.app_detail_certificate), detail.certificate)
+        )
+        fragment.setData(res)
+        Log.d(Constant.DEBUG_TAG, "INIT END")
+//        fragment.setLoading(false)
+      }, {
+        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
+      })
+    disposeBag.add(dispose)
+  }
+
+  private fun initAppManifest(fragment: ApplicationInfoFragment) {
+//    fragment.setLoading(true)
+    val dispose = viewModel.oAppManifest(args.source)
+      .subscribeOn(Schedulers.newThread())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe({
+        fragment.setData(listOf(getInfoMap(null, it)))
+//        fragment.setLoading(false)
+      }, {
+        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
+      })
+    disposeBag.add(dispose)
+  }
+
+  private fun initAppResource(fragment: ApplicationInfoFragment) {
+//    fragment.setLoading(true)
+    val dispose = viewModel.oAppResource(args.source)
+      .subscribeOn(Schedulers.newThread())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe({ list ->
+        val res = ArrayList<HashMap<String, String?>>()
+        list.forEach {
+          res.add(getInfoMap(null, it))
+        }
+        fragment.setData(res)
+//        fragment.setLoading(false)
+      }, {
+        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
+      })
+    disposeBag.add(dispose)
+  }
+
+  private fun getInfoMap(name: String?, content: String?) =
+    HashMap<String, String?>().apply { put("name", name); put("content", content) }
 
   override fun onDestroy() {
     disposeBag.clear()

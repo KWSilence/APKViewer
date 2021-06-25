@@ -1,13 +1,28 @@
 <resources>
   <string name="app_name">APKViewer</string>
 
-  <string name="hello_blank_fragment">Hello blank fragment</string>
   <string name="app_info_logo">app_logo</string>
   <string name="search_title">Search</string>
+
   <string name="label_fragment_main">Main</string>
-  <string name="text_apks">Disk APKs</string>
   <string name="label_application_detail_fragment">Details</string>
+
+  <string name="text_installed_list">Installed</string>
+  <string name="text_disk_list">Disk</string>
+
   <string name="text_installed_user_apps">User Apps</string>
   <string name="text_installed_system_apps">System Apps</string>
-  <string name="app_list_collapsed_chars">[ ]</string>
+
+  <string name="app_detail_tab_info">Info</string>
+  <string name="app_detail_tab_manifest">Manifest</string>
+  <string name="app_detail_tab_resource">Resource</string>
+
+  <string name="app_detail_package_name">Package name</string>
+  <string name="app_detail_version">Version</string>
+  <string name="app_detail_size">Size</string>
+  <string name="app_detail_apk_file">APK file</string>
+  <string name="app_detail_data_path">Data path</string>
+  <string name="app_detail_install_date">Install date</string>
+  <string name="app_detail_update_date">Update date</string>
+  <string name="app_detail_certificate">Certificate</string>
 </resources>

@@ -65,5 +65,4 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
     }
     notifyDataSetChanged()
   }
-
 }
