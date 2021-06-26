@@ -48,7 +48,7 @@ class ApplicationDetailFragment : Fragment() {
     initAppHead()
     initAppDetail(fragments[0])
     initAppManifest(fragments[1])
-//    initAppResource(fragments[2])
+    initAppResource(fragments[2])
     return binding.root
   }
 
@@ -81,7 +81,6 @@ class ApplicationDetailFragment : Fragment() {
   }
 
   private fun initAppDetail(fragment: ApplicationInfoFragment) {
-//    fragment.setLoading(true)
     val dispose = viewModel.oAppDetail(args.source)
       .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
@@ -97,7 +96,6 @@ class ApplicationDetailFragment : Fragment() {
           getInfoMap(getString(R.string.app_detail_certificate), detail.certificate)
         )
         fragment.setData(res)
-//        fragment.setLoading(false)
       }, {
         Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
       })
@@ -105,13 +103,11 @@ class ApplicationDetailFragment : Fragment() {
   }
 
   private fun initAppManifest(fragment: ApplicationInfoFragment) {
-//    fragment.setLoading(true)
     val dispose = viewModel.oAppManifest(args.source)
       .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({
         fragment.setData(listOf(getInfoMap(null, it)))
-//        fragment.setLoading(false)
       }, {
         Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
       })
@@ -119,7 +115,6 @@ class ApplicationDetailFragment : Fragment() {
   }
 
   private fun initAppResource(fragment: ApplicationInfoFragment) {
-//    fragment.setLoading(true)
     val dispose = viewModel.oAppResource(args.source)
       .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
@@ -129,7 +124,6 @@ class ApplicationDetailFragment : Fragment() {
           res.add(getInfoMap(null, it))
         }
         fragment.setData(res)
-//        fragment.setLoading(false)
       }, {
         Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
       })

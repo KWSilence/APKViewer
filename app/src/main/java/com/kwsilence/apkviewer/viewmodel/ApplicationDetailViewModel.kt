@@ -6,10 +6,12 @@ import com.kwsilence.apkviewer.model.Application
 import com.kwsilence.apkviewer.model.ApplicationDetail
 import io.reactivex.rxjava3.core.Single
 import net.dongliu.apk.parser.ApkFile
+import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -72,19 +74,22 @@ class ApplicationDetailViewModel(private val pm: PackageManager) : ViewModel() {
 
   fun oAppManifest(source: String): Single<String> =
     Single.create { sub ->
-      val path =
-        if (isAPK(source)) {
-          source
-        } else {
-          pm.getPackageInfo(source, PackageManager.GET_META_DATA).applicationInfo.sourceDir
-        }
-      val manifest = ApkFile(path).manifestXml
+      val manifest = ApkFile(getApkPath(source)).manifestXml
       sub.onSuccess(manifest)
     }
 
   fun oAppResource(source: String): Single<ArrayList<String>> =
     Single.create { sub ->
-      TODO("Get App Resources")
+      val list = ArrayList<String>()
+      val zip = ZipFile(getApkPath(source))
+      zip.fileHeaders.forEach { header ->
+        val name = header.fileName
+        if (name.endsWith(".so"))
+          list.add(name.split(File.separator).last())
+      }
+      if (list.isEmpty())
+        list.add("None")
+      sub.onSuccess(list)
     }
 
 
@@ -115,4 +120,11 @@ class ApplicationDetailViewModel(private val pm: PackageManager) : ViewModel() {
     val digitGroups = (log10(size.toDouble()) / log10(1024.0)).toInt()
     return DecimalFormat("#,##0.#").format(size / 1024.0.pow(digitGroups.toDouble())) + " " + units[digitGroups]
   }
+
+  private fun getApkPath(source: String) =
+    if (isAPK(source)) {
+      source
+    } else {
+      pm.getPackageInfo(source, PackageManager.GET_META_DATA).applicationInfo.sourceDir
+    }
 }
