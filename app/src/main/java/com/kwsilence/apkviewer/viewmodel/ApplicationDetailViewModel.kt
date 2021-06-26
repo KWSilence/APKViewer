@@ -85,7 +85,7 @@ class ApplicationDetailViewModel(private val pm: PackageManager) : ViewModel() {
       zip.fileHeaders.forEach { header ->
         val name = header.fileName
         if (name.endsWith(".so"))
-          list.add(name.split(File.separator).last())
+          list.add(name)
       }
       if (list.isEmpty())
         list.add("None")
