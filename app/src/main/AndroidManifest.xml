@@ -3,7 +3,10 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.kwsilence.apkviewer">
 
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission
+    android:name="android.permission.QUERY_ALL_PACKAGES"
+    tools:ignore="QueryAllPackagesPermission" />
 
   <application
     android:allowBackup="true"
@@ -12,7 +15,8 @@
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/Theme.APKViewer">
-    <activity android:name=".MainActivity"
+    <activity
+      android:name=".MainActivity"
       android:screenOrientation="portrait"
       tools:ignore="LockedOrientationActivity">
       <intent-filter>
