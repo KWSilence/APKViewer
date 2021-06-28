@@ -1,12 +1,21 @@
 package com.kwsilence.apkviewer.viewmodel
 
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.model.Application
 import com.kwsilence.apkviewer.model.ApplicationDetail
 import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.dongliu.apk.parser.ApkFile
 import net.lingala.zip4j.ZipFile
+import org.jf.baksmali.Baksmali
+import org.jf.baksmali.BaksmaliOptions
+import org.jf.dexlib2.DexFileFactory
 import java.io.File
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -56,7 +65,8 @@ class ApplicationDetailViewModel(private val pm: PackageManager) : ViewModel() {
       val size = getStringSize(if (isAPK(source)) getSize(source) else getSize(apk))
 
       var cert = ""
-      ApkFile(apk).apkSingers.forEach {
+      val apkFile = ApkFile(apk)
+      apkFile.apkSingers.forEach {
         cert += "path: ${it.path}"
         it.certificateMetas.forEach { cm ->
           cert += "\nalgorithm: ${cm.signAlgorithm}"
@@ -65,6 +75,7 @@ class ApplicationDetailViewModel(private val pm: PackageManager) : ViewModel() {
           cert += "\nmd5: ${cm.certMd5}"
         }
       }
+      apkFile.close()
       if (cert.isEmpty())
         cert = "None"
 
@@ -74,7 +85,9 @@ class ApplicationDetailViewModel(private val pm: PackageManager) : ViewModel() {
 
   fun oAppManifest(source: String): Single<String> =
     Single.create { sub ->
-      val manifest = ApkFile(getApkPath(source)).manifestXml
+      val file = ApkFile(getApkPath(source))
+      val manifest = file.manifestXml
+      file.close()
       sub.onSuccess(manifest)
     }
 
@@ -92,6 +105,41 @@ class ApplicationDetailViewModel(private val pm: PackageManager) : ViewModel() {
       sub.onSuccess(list)
     }
 
+  fun oAppDexFiles(source: String): Single<Unit> =
+    Single.create { sub ->
+      clearDir(Constant.TMP_DIR)
+      val zip = ZipFile(getApkPath(source))
+      zip.fileHeaders.forEach { header ->
+        val name = header.fileName
+        if (name.endsWith(".dex"))
+          zip.extractFile(header, Constant.TMP_DIR)
+      }
+      val jobs = ArrayList<Job>()
+      File(Constant.TMP_DIR).listFiles { _, name -> name.endsWith(".dex") }?.forEach {
+        val job = viewModelScope.launch(Dispatchers.IO) {
+          Log.d(Constant.DEBUG_TAG, it.name)
+          Baksmali.disassembleDexFile(
+            DexFileFactory.loadDexFile(it.absolutePath, null),
+            File("${Constant.TMP_DIR}${File.separator}${it.name.split(".")[0]}"),
+            2,
+            BaksmaliOptions()
+          )
+          Log.d(Constant.DEBUG_TAG, "end ${it.name}")
+        }
+        jobs.add(job)
+      }
+      viewModelScope.launch {
+        jobs.forEach { it.join() }
+        sub.onSuccess(Unit)
+      }
+    }
+
+  private fun clearDir(path: String) {
+    Log.d(Constant.DEBUG_TAG, path)
+    val dir = File(path)
+    if (dir.exists())
+      dir.listFiles()?.forEach { it.deleteRecursively() }
+  }
 
   private fun isAPK(source: String) = source.endsWith(".apk")
 

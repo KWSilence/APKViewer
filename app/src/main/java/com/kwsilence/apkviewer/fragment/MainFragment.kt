@@ -10,6 +10,7 @@ import com.kwsilence.apkviewer.R
 import com.kwsilence.apkviewer.adapter.AppViewPagerAdapter
 import com.kwsilence.apkviewer.databinding.FragmentMainBinding
 import com.kwsilence.apkviewer.util.FilterableTitledFragment
+import com.kwsilence.apkviewer.util.PermissionManager
 import com.kwsilence.apkviewer.viewmodel.MainViewModel
 
 class MainFragment : Fragment() {
@@ -31,6 +32,11 @@ class MainFragment : Fragment() {
 
     setHasOptionsMenu(true)
     return binding.root
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    requestPermissions()
+    super.onViewCreated(view, savedInstanceState)
   }
 
   private fun initAppViewPagerAdapter() {
@@ -68,5 +74,10 @@ class MainFragment : Fragment() {
       }
     })
     super.onCreateOptionsMenu(menu, inflater)
+  }
+
+  private fun requestPermissions() {
+    PermissionManager.requestPermission(requireActivity(), PermissionManager.READ_PERMISSION)
+    PermissionManager.requestPermission(requireActivity(), PermissionManager.WRITE_PERMISSION)
   }
 }

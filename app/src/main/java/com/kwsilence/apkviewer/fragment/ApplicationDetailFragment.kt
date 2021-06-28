@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -14,6 +15,7 @@ import com.kwsilence.apkviewer.R
 import com.kwsilence.apkviewer.adapter.TabViewPagerAdapter
 import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.FragmentApplicationDetailBinding
+import com.kwsilence.apkviewer.util.PermissionManager
 import com.kwsilence.apkviewer.viewmodel.ApplicationDetailViewModel
 import com.kwsilence.apkviewer.viewmodel.MainViewModelFactory
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -49,6 +51,12 @@ class ApplicationDetailFragment : Fragment() {
     initAppDetail(fragments[0])
     initAppManifest(fragments[1])
     initAppResource(fragments[2])
+
+    if (!PermissionManager.requestPermission(requireActivity(), PermissionManager.WRITE_PERMISSION))
+      initAppDexFiles(fragments[2])
+    else
+      Toast.makeText(requireContext(), "Require WRITE_PERMISSION", Toast.LENGTH_SHORT).show()
+
     return binding.root
   }
 
@@ -124,6 +132,18 @@ class ApplicationDetailFragment : Fragment() {
           res.add(getInfoMap(null, it))
         }
         fragment.setData(res)
+      }, {
+        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
+      })
+    disposeBag.add(dispose)
+  }
+
+  private fun initAppDexFiles(fragment: ApplicationInfoFragment) {
+    val dispose = viewModel.oAppDexFiles(args.source)
+      .subscribeOn(Schedulers.newThread())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe({
+        Log.d(Constant.DEBUG_TAG, "initDexFiles OK")
       }, {
         Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
       })
