@@ -1,15 +1,21 @@
 package com.kwsilence.apkviewer.fragment
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.kwsilence.apkviewer.BuildConfig
 import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
 import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.FragmentDiskAppListBinding
@@ -30,6 +36,19 @@ class DiskAppListFragment(title: String?) : FilterableTitledFragment(title) {
     requireContext().packageManager
   }
 
+  private val resultLauncher by lazy {
+    registerForActivityResult(
+      ActivityResultContracts.StartActivityForResult()
+    ) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager())
+        initDiskApp()
+    }
+  }
+
+  private val permissionRequestLauncher by lazy {
+    registerForActivityResult(ActivityResultContracts.RequestPermission()) { if (it) initDiskApp() }
+  }
+
   override fun filter(constraint: String?) {
     adapter?.filter(constraint)
   }
@@ -47,11 +66,7 @@ class DiskAppListFragment(title: String?) : FilterableTitledFragment(title) {
     binding.listApp.adapter = adapter
     binding.listApp.layoutManager = LinearLayoutManager(requireContext())
 
-    if (haveStoragePermission()) {
-      initDiskApp()
-    } else {
-      requestPermission()
-    }
+    requestPermissionAndInit()
 
     return binding.root
   }
@@ -70,27 +85,20 @@ class DiskAppListFragment(title: String?) : FilterableTitledFragment(title) {
     disposeBag.add(dispose)
   }
 
-////  LAGS!!!
-//  override fun onResume() {
-////    init list after permission granted
-//    if (haveStoragePermission()) {
-//      initDiskApp()
-//    } else {
-//      Toast.makeText(requireContext(), "Require permission", Toast.LENGTH_LONG).show()
-//    }
-//    super.onResume()
-//  }
-
-  private fun haveStoragePermission() =
-    ActivityCompat.checkSelfPermission(
-      requireActivity(),
-      Manifest.permission.READ_EXTERNAL_STORAGE
-    ) == PackageManager.PERMISSION_GRANTED
-
-  private fun requestPermission() {
-    if (!haveStoragePermission()) {
-      val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-      ActivityCompat.requestPermissions(requireActivity(), permissions, 1)
+  private fun requestPermissionAndInit() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      if (!Environment.isExternalStorageManager()) {
+        resultLauncher.launch(
+          Intent(
+            ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+            Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+          )
+        )
+      } else {
+        initDiskApp()
+      }
+    } else {
+      permissionRequestLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
   }
 
