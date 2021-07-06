@@ -14,6 +14,7 @@ import com.kwsilence.apkviewer.R
 import com.kwsilence.apkviewer.adapter.TabViewPagerAdapter
 import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.FragmentApplicationDetailBinding
+import com.kwsilence.apkviewer.helper.AppInfoHelper
 import com.kwsilence.apkviewer.util.BitmapUtils
 import com.kwsilence.apkviewer.viewmodel.ApplicationDetailViewModel
 import com.kwsilence.apkviewer.viewmodel.MainViewModelFactory
@@ -124,7 +125,10 @@ class ApplicationDetailFragment : Fragment() {
   }
 
   private fun getInfoMap(name: String?, content: String?) =
-    HashMap<String, String?>().apply { put("name", name); put("content", content) }
+    HashMap<String, String?>().apply {
+      put(AppInfoHelper.APP_INFO_ROW_NAME, name)
+      put(AppInfoHelper.APP_INFO_ROW_CONTENT, content)
+    }
 
   override fun onDestroy() {
     disposeBag.clear()

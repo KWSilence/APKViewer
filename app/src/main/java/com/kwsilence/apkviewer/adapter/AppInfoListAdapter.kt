@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kwsilence.apkviewer.databinding.InfoRowBinding
+import com.kwsilence.apkviewer.helper.AppInfoHelper
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -22,12 +23,12 @@ class AppInfoListAdapter : RecyclerView.Adapter<AppInfoListAdapter.MyViewHolder>
 
   override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
     val currentInfo = list[position]
-    if (currentInfo["name"] != null)
+    if (currentInfo[AppInfoHelper.APP_INFO_ROW_NAME] != null)
       holder.binding.infoContent.textAlignment = TextView.TEXT_ALIGNMENT_TEXT_END
     else
       holder.binding.infoContent.textAlignment = TextView.TEXT_ALIGNMENT_TEXT_START
-    holder.binding.infoName.text = currentInfo["name"]
-    holder.binding.infoContent.text = currentInfo["content"]
+    holder.binding.infoName.text = currentInfo[AppInfoHelper.APP_INFO_ROW_NAME]
+    holder.binding.infoContent.text = currentInfo[AppInfoHelper.APP_INFO_ROW_CONTENT]
   }
 
   override fun getItemCount(): Int {

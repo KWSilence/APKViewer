@@ -30,6 +30,9 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <provider
+      android:name=".provider.ApplicationContentProvider"
+      android:authorities="com.kwsilence.apkviewer.provider"
+      android:exported="true" />
   </application>
-
 </manifest>
