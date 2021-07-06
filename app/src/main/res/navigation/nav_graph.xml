@@ -24,7 +24,7 @@
     android:label="@string/label_application_detail_fragment"
     tools:layout="@layout/fragment_application_detail">
     <argument
-      android:name="source"
-      app:argType="string" />
+      android:name="app"
+      app:argType="com.kwsilence.apkviewer.model.Application" />
   </fragment>
 </navigation>

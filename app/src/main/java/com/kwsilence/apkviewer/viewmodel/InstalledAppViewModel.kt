@@ -2,11 +2,12 @@ package com.kwsilence.apkviewer.viewmodel
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kwsilence.apkviewer.adapter.segmented.SegmentedAppListAdapter
 import com.kwsilence.apkviewer.model.Application
+import com.kwsilence.apkviewer.util.BitmapUtils
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -47,10 +48,10 @@ class InstalledAppViewModel(private val pm: PackageManager) : ViewModel() {
       val job = viewModelScope.launch(Dispatchers.IO) {
         if (isSystem xor (info.flags.and(ApplicationInfo.FLAG_SYSTEM) > 0))
           return@launch
-        var icon: Drawable? = null
+        var icon: Bitmap? = null
         var name = ""
         val iconLoad = this.launch {
-          icon = info.loadIcon(pm)
+          icon = BitmapUtils.drawableToBitmap(info.loadIcon(pm))
         }
         val labelLoad = this.launch {
           name = info.loadLabel(pm).toString()
@@ -58,7 +59,7 @@ class InstalledAppViewModel(private val pm: PackageManager) : ViewModel() {
         iconLoad.join()
         labelLoad.join()
         val packageName = info.packageName
-        list.add(Application(icon!!, name, packageName))
+        list.add(Application(BitmapUtils.pngBitmapToByteArray(icon), name, packageName))
       }
       jobs.add(job)
     }

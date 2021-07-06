@@ -1,9 +1,11 @@
 package com.kwsilence.apkviewer.model
 
-import android.graphics.drawable.Drawable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Application(
-  val icon: Drawable?,
+  val icon: ByteArray?,
   val name: String,
   val source: String
-)
+) : Parcelable

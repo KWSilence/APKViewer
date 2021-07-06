@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kwsilence.apkviewer.databinding.ApplicationRowBinding
 import com.kwsilence.apkviewer.fragment.MainFragmentDirections
 import com.kwsilence.apkviewer.model.Application
+import com.kwsilence.apkviewer.util.BitmapUtils
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -25,12 +26,12 @@ class ApplicationListAdapter : RecyclerView.Adapter<ApplicationListAdapter.MyVie
 
   override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
     val currentApp = displayedAppList[position]
-    holder.binding.imgApp.setImageDrawable(currentApp.icon)
+    holder.binding.imgApp.setImageBitmap(BitmapUtils.byteArrayToBitmap(currentApp.icon))
     holder.binding.nameApp.text = currentApp.name
     holder.binding.sourceApp.text = currentApp.source
     //navigate to details
     holder.binding.appRowLayout.setOnClickListener {
-      val action = MainFragmentDirections.fromMainToDetails(currentApp.source)
+      val action = MainFragmentDirections.fromMainToDetails(currentApp)
       holder.itemView.findNavController().navigate(action)
     }
   }

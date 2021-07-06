@@ -1,16 +1,14 @@
 package com.kwsilence.apkviewer.adapter.segmented
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.kwsilence.apkviewer.R
+import com.kwsilence.apkviewer.databinding.ApplicationRowBinding
+import com.kwsilence.apkviewer.databinding.SegmentHeaderBinding
 import com.kwsilence.apkviewer.fragment.MainFragmentDirections
+import com.kwsilence.apkviewer.util.BitmapUtils
 
 class SegmentedAppListAdapter : RecyclerView.Adapter<SegmentedAppListAdapter.MyViewHolder>() {
 
@@ -24,7 +22,10 @@ class SegmentedAppListAdapter : RecyclerView.Adapter<SegmentedAppListAdapter.MyV
 
   private var segments = SegmentAppList()
 
-  class MyViewHolder(view: View) : RecyclerView.ViewHolder(view)
+  class MyViewHolder(
+    val headerBinding: SegmentHeaderBinding?,
+    val rowBinding: ApplicationRowBinding?
+  ) : RecyclerView.ViewHolder(headerBinding?.root ?: rowBinding!!.root)
 
   override fun getItemViewType(position: Int): Int {
     if (segments.getItem(position).displayedList.isNotEmpty())
@@ -33,32 +34,35 @@ class SegmentedAppListAdapter : RecyclerView.Adapter<SegmentedAppListAdapter.MyV
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-    val layout = when (viewType) {
-      TYPE_HEADER -> R.layout.segment_header
-      TYPE_ROW -> R.layout.application_row
-      else -> R.layout.application_row
-    }
-    val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-    return MyViewHolder(view)
+    val inflater = LayoutInflater.from(parent.context)
+    val headerBinding =
+      if (viewType == TYPE_HEADER) SegmentHeaderBinding.inflate(inflater, parent, false) else null
+    val rowBinding =
+      if (viewType == TYPE_ROW) ApplicationRowBinding.inflate(inflater, parent, false) else null
+    return MyViewHolder(headerBinding, rowBinding)
   }
 
   override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
     val item = segments.getItem(position)
     if (item.displayedList.isNotEmpty()) {
       val currentApp = item.displayedList[0]
-      holder.itemView.findViewById<ImageView>(R.id.img_app).setImageDrawable(currentApp.icon)
-      holder.itemView.findViewById<TextView>(R.id.name_app).text = currentApp.name
-      holder.itemView.findViewById<TextView>(R.id.source_app).text = currentApp.source
-      holder.itemView.findViewById<ConstraintLayout>(R.id.app_row_layout).setOnClickListener {
-        val action = MainFragmentDirections.fromMainToDetails(currentApp.source)
+      val binding = holder.rowBinding!!
+      binding.imgApp.setImageBitmap(BitmapUtils.byteArrayToBitmap(currentApp.icon))
+      binding.nameApp.text = currentApp.name
+      binding.sourceApp.text = currentApp.source
+      binding.appRowLayout.setOnClickListener {
+        val action = MainFragmentDirections.fromMainToDetails(currentApp)
         holder.itemView.findNavController().navigate(action)
       }
     } else {
-      holder.itemView.findViewById<TextView>(R.id.segment_header).text = item.title
-      holder.itemView.findViewById<TextView>(R.id.segment_header).setOnClickListener {
-        val segment = segments.getSegment(position)
-        segment?.isCollapsed = !segment?.isCollapsed!!
-        notifyDataSetChanged()
+      val binding = holder.headerBinding!!
+      binding.segmentHeader.apply {
+        text = item.title
+        setOnClickListener {
+          val segment = segments.getSegment(position)
+          segment?.isCollapsed = !segment?.isCollapsed!!
+          notifyDataSetChanged()
+        }
       }
     }
   }

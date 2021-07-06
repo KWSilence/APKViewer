@@ -14,6 +14,7 @@ import com.kwsilence.apkviewer.R
 import com.kwsilence.apkviewer.adapter.TabViewPagerAdapter
 import com.kwsilence.apkviewer.constant.Constant
 import com.kwsilence.apkviewer.databinding.FragmentApplicationDetailBinding
+import com.kwsilence.apkviewer.util.BitmapUtils
 import com.kwsilence.apkviewer.viewmodel.ApplicationDetailViewModel
 import com.kwsilence.apkviewer.viewmodel.MainViewModelFactory
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -67,21 +68,13 @@ class ApplicationDetailFragment : Fragment() {
   }
 
   private fun initAppHead() {
-    val dispose = viewModel.oAppHead(args.source)
-      .subscribeOn(Schedulers.newThread())
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe({
-        binding.appHead.imgApp.setImageDrawable(it.icon)
-        binding.appHead.nameApp.text = it.name
-        binding.appHead.sourceApp.text = it.source
-      }, {
-        Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
-      })
-    disposeBag.add(dispose)
+    binding.appHead.imgApp.setImageBitmap(BitmapUtils.byteArrayToBitmap(args.app.icon))
+    binding.appHead.nameApp.text = args.app.name
+    binding.appHead.sourceApp.text = args.app.source
   }
 
   private fun initAppDetail(fragment: ApplicationInfoFragment) {
-    val dispose = viewModel.oAppDetail(args.source)
+    val dispose = viewModel.oAppDetail(args.app.source)
       .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({ detail ->
@@ -103,7 +96,7 @@ class ApplicationDetailFragment : Fragment() {
   }
 
   private fun initAppManifest(fragment: ApplicationInfoFragment) {
-    val dispose = viewModel.oAppManifest(args.source)
+    val dispose = viewModel.oAppManifest(args.app.source)
       .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({
@@ -115,7 +108,7 @@ class ApplicationDetailFragment : Fragment() {
   }
 
   private fun initAppResource(fragment: ApplicationInfoFragment) {
-    val dispose = viewModel.oAppResource(args.source)
+    val dispose = viewModel.oAppResource(args.app.source)
       .subscribeOn(Schedulers.newThread())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({ list ->
