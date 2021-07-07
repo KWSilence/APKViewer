@@ -7,12 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kwsilence.apkviewer.adapter.ApplicationListAdapter
 import com.kwsilence.apkviewer.model.Application
+import com.kwsilence.apkviewer.util.APKFileUtils
 import com.kwsilence.apkviewer.util.BitmapUtils
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.io.File
 
 class DiskAppViewModel(private val pm: PackageManager) : ViewModel() {
 
@@ -28,8 +28,7 @@ class DiskAppViewModel(private val pm: PackageManager) : ViewModel() {
     //this function deprecated, but it only used to read data
     @Suppress("DEPRECATION")
     val path = Environment.getExternalStorageDirectory()
-    val apkPaths = ArrayList<String>()
-    findAPK(path, apkPaths)
+    val apkPaths = APKFileUtils.findAPK(path)
     val jobs = ArrayList<Job>()
     apkPaths.forEach {
       val job = viewModelScope.launch(Dispatchers.IO) {
@@ -59,17 +58,6 @@ class DiskAppViewModel(private val pm: PackageManager) : ViewModel() {
       list.sortBy { it.name }
       diskAppsUsed = true
       sub.onSuccess(list)
-    }
-  }
-
-  private fun findAPK(dir: File, list: ArrayList<String>) {
-    val files = dir.listFiles()
-    files?.filter { it.path.endsWith(".apk") || it.isDirectory }?.toList()?.forEach { file ->
-      if (file.isDirectory) {
-        findAPK(file, list)
-      } else {
-        list.add(file.absolutePath)
-      }
     }
   }
 }
