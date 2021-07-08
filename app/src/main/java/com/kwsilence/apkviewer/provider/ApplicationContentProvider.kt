@@ -156,7 +156,7 @@ class ApplicationContentProvider : ContentProvider() {
     }
     if (list.isEmpty())
       list.add("None")
-    cursor.addRow(list.toArray())
+    list.forEach { cursor.addRow(arrayOf(it)) }
     return cursor
   }
 
