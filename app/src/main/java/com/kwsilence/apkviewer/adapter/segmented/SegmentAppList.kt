@@ -8,9 +8,7 @@ class SegmentAppList {
   fun getItem(pos: Int): SegmentApp {
     var nPos = pos
     segments.forEach {
-      if (nPos == 0) {
-        return SegmentApp(it.title, ArrayList())
-      }
+      if (nPos == 0) return SegmentApp(it.title, ArrayList())
       --nPos
       if (!it.isCollapsed) {
         if (nPos - it.displayedList.size >= 0 || it.displayedList.size == 0) {
@@ -49,9 +47,7 @@ class SegmentAppList {
   fun getSegment(pos: Int): SegmentApp? {
     var nPos = pos
     segments.forEach {
-      if (nPos == 0) {
-        return it
-      }
+      if (nPos == 0) return it
       --nPos
       if (!it.isCollapsed)
         nPos -= it.displayedList.size

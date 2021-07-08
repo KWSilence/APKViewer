@@ -32,9 +32,7 @@ class DiskAppListFragment(title: String?) : FilterableTitledFragment(title) {
   private lateinit var viewModel: DiskAppViewModel
   private var adapter: ApplicationListAdapter? = null
   private val disposeBag = CompositeDisposable()
-  private val pm: PackageManager by lazy {
-    requireContext().packageManager
-  }
+  private val pm: PackageManager by lazy { requireContext().packageManager }
 
   private val resultLauncher by lazy {
     registerForActivityResult(

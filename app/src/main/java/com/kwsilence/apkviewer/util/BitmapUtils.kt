@@ -27,8 +27,7 @@ object BitmapUtils {
   }
 
   fun pngBitmapToByteArray(bitmap: Bitmap?): ByteArray? {
-    if (bitmap == null)
-      return null
+    bitmap ?: return null
     val baos = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
     val array = baos.toByteArray()

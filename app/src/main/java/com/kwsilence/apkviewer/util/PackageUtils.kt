@@ -22,7 +22,7 @@ object PackageUtils {
   private val simpleFormatter = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
   fun sourceToApplication(pm: PackageManager, source: String?, mode: Int): Application? {
-    if (source == null) return null
+    source ?: return null
     val isApk = APKFileUtils.isAPK(source)
     if ((mode != APK_FILE) and isApk) return null
     if (isApk) {
@@ -47,7 +47,7 @@ object PackageUtils {
   }
 
   fun sourceToApplicationDetail(pm: PackageManager, source: String?): ApplicationDetail? {
-    if (source == null) return null
+    source ?: return null
     val isApk = APKFileUtils.isAPK(source)
 
     val packageInfo =
@@ -85,7 +85,7 @@ object PackageUtils {
   }
 
   fun sourceToManifest(pm: PackageManager, source: String?): String? {
-    if (source == null) return null
+    source ?: return null
     val file = ApkFile(APKFileUtils.getApkPath(pm, source))
     val manifest = file.manifestXml
     file.close()
@@ -93,7 +93,7 @@ object PackageUtils {
   }
 
   fun sourceToResource(pm: PackageManager, source: String?): ArrayList<String>? {
-    if (source == null) return null
+    source ?: return null
     val list = ArrayList<String>()
     val zip = ZipFile(APKFileUtils.getApkPath(pm, source))
     zip.fileHeaders.forEach { header ->
