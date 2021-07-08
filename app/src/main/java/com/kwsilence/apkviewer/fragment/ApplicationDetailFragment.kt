@@ -80,14 +80,14 @@ class ApplicationDetailFragment : Fragment() {
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({ detail ->
         val res = listOf(
-          getInfoMap(getString(R.string.app_detail_package_name), detail.packageName),
-          getInfoMap(getString(R.string.app_detail_version), detail.version),
-          getInfoMap(getString(R.string.app_detail_size), detail.size),
-          getInfoMap(getString(R.string.app_detail_apk_file), detail.apkFile),
-          getInfoMap(getString(R.string.app_detail_data_path), detail.dataPath),
-          getInfoMap(getString(R.string.app_detail_install_date), detail.installDate),
-          getInfoMap(getString(R.string.app_detail_update_date), detail.updateDate),
-          getInfoMap(getString(R.string.app_detail_certificate), detail.certificate)
+          getInfoMap(getString(R.string.app_detail_package_name), detail?.packageName),
+          getInfoMap(getString(R.string.app_detail_version), detail?.version),
+          getInfoMap(getString(R.string.app_detail_size), detail?.size),
+          getInfoMap(getString(R.string.app_detail_apk_file), detail?.apkFile),
+          getInfoMap(getString(R.string.app_detail_data_path), detail?.dataPath),
+          getInfoMap(getString(R.string.app_detail_install_date), detail?.installDate),
+          getInfoMap(getString(R.string.app_detail_update_date), detail?.updateDate),
+          getInfoMap(getString(R.string.app_detail_certificate), detail?.certificate)
         )
         fragment.setData(res)
       }, {
@@ -114,7 +114,7 @@ class ApplicationDetailFragment : Fragment() {
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe({ list ->
         val res = ArrayList<HashMap<String, String?>>()
-        list.forEach {
+        list?.forEach {
           res.add(getInfoMap(null, it))
         }
         fragment.setData(res)
