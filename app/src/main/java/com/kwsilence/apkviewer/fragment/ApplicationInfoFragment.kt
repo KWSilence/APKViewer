@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.kwsilence.apkviewer.R
 import com.kwsilence.apkviewer.adapter.AppInfoListAdapter
 import com.kwsilence.apkviewer.databinding.FragmentApplicationInfoBinding
 import com.kwsilence.apkviewer.util.TitledFragment
@@ -21,6 +25,13 @@ class ApplicationInfoFragment(title: String) : TitledFragment(title) {
     binding = FragmentApplicationInfoBinding.inflate(inflater, container, false)
     binding.listAppInfo.adapter = adapter
     binding.listAppInfo.layoutManager = LinearLayoutManager(requireContext())
+
+    ContextCompat.getDrawable(requireContext(), R.drawable.divider_drawable)?.let { drawable ->
+      val divider = DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+      divider.setDrawable(drawable)
+      binding.listAppInfo.addItemDecoration(divider)
+    }
+
     return binding.root
   }
 
