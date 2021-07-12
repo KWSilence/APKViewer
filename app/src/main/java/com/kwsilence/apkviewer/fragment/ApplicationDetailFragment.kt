@@ -3,9 +3,9 @@ package com.kwsilence.apkviewer.fragment
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -51,6 +51,8 @@ class ApplicationDetailFragment : Fragment() {
     initAppDetail(fragments[0])
     initAppManifest(fragments[1])
     initAppResource(fragments[2])
+
+    setHasOptionsMenu(true)
     return binding.root
   }
 
@@ -129,6 +131,41 @@ class ApplicationDetailFragment : Fragment() {
       put(AppInfoHelper.APP_INFO_ROW_NAME, name)
       put(AppInfoHelper.APP_INFO_ROW_CONTENT, content)
     }
+
+  override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    inflater.inflate(R.menu.open_folder, menu)
+    super.onCreateOptionsMenu(menu, inflater)
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    when (item.itemId) {
+      R.id.open_folder -> decompileDex()
+    }
+    return super.onOptionsItemSelected(item)
+  }
+
+  private fun decompileDex() {
+    AlertDialog.Builder(requireContext()).apply {
+      setTitle("Decompile dex files")
+      setMessage("Decompile dex files to smali")
+      setPositiveButton("Yes") { _, _ ->
+        Toast.makeText(requireContext(), "Decompile started", Toast.LENGTH_LONG).show()
+        viewModel.oAppSmaliFile(args.app.source)
+          .subscribeOn(Schedulers.newThread())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe({
+            AlertDialog.Builder(requireContext()).apply {
+              setTitle("Success")
+              setMessage("Successfully decompiled in \"$it\"")
+              setPositiveButton("OK") { _, _ -> }
+            }.create().show()
+          }, {
+            Log.e(Constant.DEBUG_TAG, "it ${it.localizedMessage}")
+          })
+      }
+      setNegativeButton("No") { _, _ -> }
+    }.create().show()
+  }
 
   override fun onDestroy() {
     disposeBag.clear()

@@ -25,4 +25,5 @@
   <string name="app_detail_install_date">Install date</string>
   <string name="app_detail_update_date">Update date</string>
   <string name="app_detail_certificate">Certificate</string>
+  <string name="open_folder">Decompile dex files</string>
 </resources>
